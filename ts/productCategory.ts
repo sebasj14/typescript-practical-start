@@ -32,3 +32,5 @@ class PowerStarCategory extends ProductCategory {
         return this.imgPath + "PowerStar.png";
     }
 }
+
+export { ProductCategory, OneUpShroomCategory, RedShroomCategory, FireFlowerCategory, PowerStarCategory }

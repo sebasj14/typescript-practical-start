@@ -1,9 +1,9 @@
-/// <reference path="./coin.ts" />
-/// <reference path="./product.ts" />
-/// <reference path="./productFactory.ts" />
+import { Product, Initial as Init } from './product';
+import getVendingProduct from './productFactory';
 
+import * as Coins from './coin';
 
-enum VendingMachineSize {
+export enum VendingMachineSize {
     small = 6,
     medium = 9,
     large = 12
@@ -17,9 +17,9 @@ class Cell {
     sold = ko.observable(false);
 }
 
-class VendingMachine {
+export class VendingMachine {
     paid = ko.observable(0);
-    selectedCell = ko.observable(new Cell(new Initial()));
+    selectedCell = ko.observable(new Cell(new Init()));
     cells = ko.observableArray([]);
     acceptedCoins: Coins.Coin[] = [
         new Coins.StarCoin(),
@@ -32,7 +32,7 @@ class VendingMachine {
     set size(givenSize: VendingMachineSize) {
         this.cells([]);
         for (let index = 0; index < givenSize; index++) {
-            let product = ProductFactory.getProduct();
+            let product = getVendingProduct();
             this.cells.push(new Cell(product));
         }
     }

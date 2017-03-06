@@ -1,50 +1,3 @@
-var Coins;
-(function (Coins) {
-    let imagePath = "img/";
-    class Coin {
-        constructor(value) {
-            this.value = value;
-            this.value = value;
-        }
-    }
-    Coins.Coin = Coin;
-    class StarCoin extends Coin {
-        constructor() {
-            super(10);
-        }
-        getImageUrl() {
-            return imagePath + "StarCoin.png";
-        }
-    }
-    Coins.StarCoin = StarCoin;
-    class RedCoin extends Coin {
-        constructor() {
-            super(50);
-        }
-        getImageUrl() {
-            return imagePath + "RedCoin.png";
-        }
-    }
-    Coins.RedCoin = RedCoin;
-    class BlueCoin extends Coin {
-        constructor() {
-            super(25);
-        }
-        getImageUrl() {
-            return imagePath + "BlueCoin.png";
-        }
-    }
-    Coins.BlueCoin = BlueCoin;
-    class RainbowCoin extends Coin {
-        constructor() {
-            super(100);
-        }
-        getImageUrl() {
-            return imagePath + "RainbowCoin.png";
-        }
-    }
-    Coins.RainbowCoin = RainbowCoin;
-})(Coins || (Coins = {}));
 class ProductCategory {
     constructor() {
         this.imgPath = "img/";
@@ -145,62 +98,113 @@ class ProductFactory {
         return product;
     }
 }
-/// <reference path="./coin.ts" />
-/// <reference path="./product.ts" />
-/// <reference path="./productFactory.ts" />
-var VendingMachineSize;
-(function (VendingMachineSize) {
-    VendingMachineSize[VendingMachineSize["small"] = 6] = "small";
-    VendingMachineSize[VendingMachineSize["medium"] = 9] = "medium";
-    VendingMachineSize[VendingMachineSize["large"] = 12] = "large";
-})(VendingMachineSize || (VendingMachineSize = {}));
-class Cell {
-    constructor(product) {
-        this.product = product;
-        this.stock = ko.observable(3);
-        this.sold = ko.observable(false);
-    }
-}
-class VendingMachine {
-    constructor() {
-        this.paid = ko.observable(0);
-        this.selectedCell = ko.observable(new Cell(new Initial()));
-        this.cells = ko.observableArray([]);
-        this.acceptedCoins = [
-            new Coins.StarCoin(),
-            new Coins.RedCoin(),
-            new Coins.BlueCoin(),
-            new Coins.RainbowCoin()
-        ];
-        this.canPay = ko.pureComputed(() => this.paid() - this.selectedCell().product.price >= 0);
-        this.select = (cell) => {
-            cell.sold(false);
-            this.selectedCell(cell);
-        };
-        this.acceptCoin = (coin) => {
-            let oldTotal = this.paid();
-            this.paid(oldTotal + coin.value);
-        };
-        this.pay = () => {
-            if (this.selectedCell().stock() < 1) {
-                alert("Out of stock!");
-                return;
-            }
-            let currentPaid = this.paid();
-            this.paid(Math.round((currentPaid - this.selectedCell().product.price) * 100) / 100);
-            let currentStock = this.selectedCell().stock();
-            this.selectedCell().stock(currentStock - 1);
-            this.selectedCell().sold(true);
-        };
-    }
-    set size(givenSize) {
-        this.cells([]);
-        for (let index = 0; index < givenSize; index++) {
-            let product = ProductFactory.getProduct();
-            this.cells.push(new Cell(product));
+define("coin", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    let imagePath = "img/";
+    class Coin {
+        constructor(value) {
+            this.value = value;
+            this.value = value;
         }
     }
-}
+    exports.Coin = Coin;
+    class StarCoin extends Coin {
+        constructor() {
+            super(10);
+        }
+        getImageUrl() {
+            return imagePath + "StarCoin.png";
+        }
+    }
+    exports.StarCoin = StarCoin;
+    class RedCoin extends Coin {
+        constructor() {
+            super(50);
+        }
+        getImageUrl() {
+            return imagePath + "RedCoin.png";
+        }
+    }
+    exports.RedCoin = RedCoin;
+    class BlueCoin extends Coin {
+        constructor() {
+            super(25);
+        }
+        getImageUrl() {
+            return imagePath + "BlueCoin.png";
+        }
+    }
+    exports.BlueCoin = BlueCoin;
+    class RainbowCoin extends Coin {
+        constructor() {
+            super(100);
+        }
+        getImageUrl() {
+            return imagePath + "RainbowCoin.png";
+        }
+    }
+    exports.RainbowCoin = RainbowCoin;
+});
+/// <reference path="./product.ts" />
+/// <reference path="./productFactory.ts" />
+define("vendingMachine", ["require", "exports", "coin"], function (require, exports, Coins) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var VendingMachineSize;
+    (function (VendingMachineSize) {
+        VendingMachineSize[VendingMachineSize["small"] = 6] = "small";
+        VendingMachineSize[VendingMachineSize["medium"] = 9] = "medium";
+        VendingMachineSize[VendingMachineSize["large"] = 12] = "large";
+    })(VendingMachineSize || (VendingMachineSize = {}));
+    class Cell {
+        constructor(product) {
+            this.product = product;
+            this.stock = ko.observable(3);
+            this.sold = ko.observable(false);
+        }
+    }
+    class VendingMachine {
+        constructor() {
+            this.paid = ko.observable(0);
+            this.selectedCell = ko.observable(new Cell(new Initial()));
+            this.cells = ko.observableArray([]);
+            this.acceptedCoins = [
+                new Coins.StarCoin(),
+                new Coins.RedCoin(),
+                new Coins.BlueCoin(),
+                new Coins.RainbowCoin()
+            ];
+            this.canPay = ko.pureComputed(() => this.paid() - this.selectedCell().product.price >= 0);
+            this.select = (cell) => {
+                cell.sold(false);
+                this.selectedCell(cell);
+            };
+            this.acceptCoin = (coin) => {
+                let oldTotal = this.paid();
+                this.paid(oldTotal + coin.value);
+            };
+            this.pay = () => {
+                if (this.selectedCell().stock() < 1) {
+                    alert("Out of stock!");
+                    return;
+                }
+                let currentPaid = this.paid();
+                this.paid(Math.round((currentPaid - this.selectedCell().product.price) * 100) / 100);
+                let currentStock = this.selectedCell().stock();
+                this.selectedCell().stock(currentStock - 1);
+                this.selectedCell().sold(true);
+            };
+        }
+        set size(givenSize) {
+            this.cells([]);
+            for (let index = 0; index < givenSize; index++) {
+                let product = ProductFactory.getProduct();
+                this.cells.push(new Cell(product));
+            }
+        }
+    }
+});
 /// <reference path="vendingMachine.ts" />
 var machine = new VendingMachine();
 machine.size = VendingMachineSize.medium;
